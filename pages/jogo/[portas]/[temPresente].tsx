@@ -7,14 +7,25 @@ import { useRouter } from "next/router";
 
 export default function jogo() {
   const router = useRouter()
+  const [valido, setValido] = useState(false);
   const [portas, setPortas] = useState([]);
   
   useEffect(() => {
     const portas = +router.query.portas
     const temPresente = +router.query.temPresente
 
-    setPortas(criarPortas(portas, temPresente))
+    const qtdePortasValida = portas >= 3 && portas <= 50
+    const temPresenteValido = temPresente >= 1 && temPresente <= portas
+    
+    setValido(qtdePortasValida && temPresenteValido)
+  },[portas])
 
+  // validação 
+
+  useEffect(() => {
+    const portas = +router.query.portas
+    const temPresente = +router.query.temPresente
+    setPortas(criarPortas(portas, temPresente))
   },[router?.query])
  
 
@@ -24,7 +35,7 @@ export default function jogo() {
   // pasta e arquivo criados com []=> [dentro.tsx] => exemplo 
 
   function renderizarPortas() {
-    return portas.map((porta) => {
+    return  portas.map((porta) => {
       return (
         <Porta
           key={porta.numero}
@@ -39,7 +50,11 @@ export default function jogo() {
   return (
     <div id={styles.jogo}>
       <div className={styles.portas}>
-          {renderizarPortas()}
+          {valido ?
+          renderizarPortas():
+          <h1>Valores Inválidos</h1>
+        
+        }
           </div>
           <div className={styles.botoes}>
               <Link href={"/"}>
